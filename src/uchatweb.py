@@ -21,7 +21,7 @@ app_key = "x18ywvqf8x8rc"
 app_secret = "I5Rty3m89YC"
 
 ucs = UChatServer(app_key, app_secret)
-ucdb = UChatDB(dbname = 'uchat', username = 'uchat', password = 'uchat', host = '192.168.0.102')
+ucdb = UChatDB(dbname = 'uchat', username = 'uchat', password = 'uchat', host = '121.42.161.150')
 
 urls = (
     '/login', 'login',
