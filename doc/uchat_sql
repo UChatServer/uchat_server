@@ -1,0 +1,20 @@
+//创建数据库，名字为"uchat"
+create database uchat;
+
+//创建用户并授权,名字为"uchat",密码"uchat"
+create user 'uchat'@'%' identified by 'uchat';
+grant all on uchat.* to 'uchat'@'%';
+flush privileges;
+
+
+//创建表
+CREATE TABLE user_info(
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id VARCHAR(20) NOT NULL,
+  user_password VARCHAR(16) NOT NULL,
+  user_token VARCHAR(256) NULL,
+  user_online VARCHAR(1) DEFAULT 'N',
+  PRIMARY KEY (id));
+
+alter table user_info add index uid (user_id);
+alter table user_info add index utoken (user_token);
