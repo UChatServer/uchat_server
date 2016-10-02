@@ -12,9 +12,18 @@ CREATE TABLE user_info(
   id INT NOT NULL AUTO_INCREMENT,
   user_id VARCHAR(20) NOT NULL,
   user_password VARCHAR(16) NOT NULL,
+  user_name VARCHAR(20) NULL,
+  user_sex VARCHAR(1) NULL,
+  user_birthday VARCHAR(20) NULL,
+  user_address VARCHAR(256) NULL,
+  user_hobbies VARCHAR(128) NULL,
+  user_career VARCHAR(16) NULL,
+  user_constellation VARCHAR(10) NULL,
+  user_tags VARCHAR(64) NULL,
+  user_avatar_url VARCHAR(1204) NULL,
   user_token VARCHAR(256) NULL,
   user_online VARCHAR(1) DEFAULT 'N',
-  PRIMARY KEY (id));
+PRIMARY KEY (id));
 
 alter table user_info add index uid (user_id);
 alter table user_info add index utoken (user_token);
