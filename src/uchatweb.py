@@ -36,7 +36,7 @@ class login:
         global ucdb
         i = web.input()
         userid = i.id
-        password = i.password
+        password = i.pwd
 
         web.header('content-type','text/json')
         rs = ucdb.canlogin(userid, password)
@@ -65,7 +65,7 @@ class register:
         global ucdb
         i = web.input()
         userid = i.id
-        password = i.password
+        password = i.pwd
         web.header('content-type','text/json')
         rs = ucdb.register(userid, password)
         if rs[0] is False:
