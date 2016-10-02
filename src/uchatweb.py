@@ -31,7 +31,7 @@ urls = (
 )
 
 class login:
-    def GET(self):
+    def POST(self):
         global ucs
         global ucdb
         i = web.input()
@@ -60,7 +60,7 @@ class login:
                 error_str =  "登录失败：用户已经在线"
                 return json.dumps({"code":0, "result": "null", "err_str": error_str})
 class register:
-    def GET(self):
+    def POST(self):
         global ucs
         global ucdb
         i = web.input()
@@ -69,13 +69,14 @@ class register:
         web.header('content-type','text/json')
         rs = ucdb.register(userid, password)
         if rs[0] is False:
-            return ("注册失败：%s" % rs[1]).decode('utf8').encode('gb2312')
+            error_str = "注册失败：%s" % rs[1]
+            return json.dumps({"err_code":0, "result":False, "err_str": error_str})
         else:
-            return "注册成功".decode('utf8').encode('gb2312')
+            return json.dumps({"err_code":1, "result":True, "err_str": "null"})
 
 
 class logout:
-    def GET(self):
+    def POST(self):
         global ucs
         global ucdb
         i = web.input()
@@ -84,16 +85,18 @@ class logout:
         web.header('content-type','text/json')
         rs = ucdb.isonline(userid)
         if rs[0] is False:
-            return ('退出失败：%s' % rs[1]).decode('utf8').encode('gb2312')
+            error_str = '退出失败：%s' % rs[1]
+            return json.dumps({"err_code":0, "result":False, "err_str": error_str})
         else:
             rs = ucdb.logout(userid, usertoken)
             if rs[0] is False:
-                return ("退出失败：%s" % (rs[1])).decode('utf8').encode('gb2312')
+                error_str = "退出失败：%s" % (rs[1])
+                return json.dumps({"err_code":0, "result":False, "err_str": error_str})
             else:
-                return "退出成功".decode('utf8').encode('gb2312') 
+                return json.dumps({"err_code":1, "result":True, "err_str": "null"})
 
 class reconnect:
-    def GET(self):
+    def POST(self):
         global ucs
         global ucdb
         i = web.input()
