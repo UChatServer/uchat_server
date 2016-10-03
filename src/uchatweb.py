@@ -4,7 +4,7 @@ import web
 from uchatserver import *
 from uchatdb import *
 import json
-
+from PIL import Image
 ##返回信息
 ##{"code": num,
 ## "result": value
@@ -28,6 +28,8 @@ urls = (
     '/register', 'register',
     '/logout', 'logout',
     '/reconnect', 'reconnect',
+    '/uploadimg', 'uploadimg',
+    '/images/(.*)', 'getimage'
 )
 
 class login:
@@ -42,7 +44,7 @@ class login:
         rs = ucdb.canlogin(userid, password)
         if rs[0] is False:
             error_str = "不能登录：%s" % rs[1]
-            return json.dumps({"code":0, "result":"null", "err_str": error_str})
+            return json.dumps({"err_code":0, "result":"null", "err_str": error_str})
         else:
             #检查是否在线
             rs = ucs.User.checkOnline(userid)
@@ -60,13 +62,13 @@ class login:
                 print rs
                 if rs.result[u'code'] is 200:
                     ucdb.online(userid, rs.result[u'token'])
-                    return json.dumps({"code":1, "result": rs.result[u'token'], "err_str": "null"})
+                    return json.dumps({"err_code":1, "result": rs.result[u'token'], "err_str": "null"})
                 else:
                     error_str = "登录失败：融云服务返回Token失败"
-                    return json.dumps({"code":0, "result": "null", "err_str": error_str})
+                    return json.dumps({"err_code":0, "result": "null", "err_str": error_str})
             else:
                 error_str =  "登录失败：用户已经在线"
-                return json.dumps({"code":0, "result": "null", "err_str": error_str})
+                return json.dumps({"err_code":0, "result": "null", "err_str": error_str})
 class register:
     def POST(self):
         global ucs
@@ -119,16 +121,59 @@ class reconnect:
             print rs
             if rs.result[u'code'] is 200:
                 ucdb.online(userid, rs.result[u'token'])
-                return json.dumps({"code":1, "result": rs.result[u'token'], "err_str": "null"})
+                return json.dumps({"err_code":1, "result": rs.result[u'token'], "err_str": "null"})
             else:
                 error_str = "登录失败：融云服务返回Token失败"
-                return json.dumps({"code":0, "result": "null", "err_str": error_str})
+                return json.dumps({"err_code":0, "result": "null", "err_str": error_str})
         else:
             error_str = "用户不在线，不能重新换取token"
-            return json.dumps({"code":0, "result": "null", "err_str": error_str})
+            return json.dumps({"err_code":0, "result": "null", "err_str": error_str})
 
+imagepath = './images'
+urlpath = 'http://121.42.161.150:8080/images/'
 
+render = web.template.render('templates/',)
 
+class uploadimg:
+    def GET(self):
+        web.header("Content-Type","text/html; charset=utf-8")
+        return render.upload("")
+        
+    def POST(self):
+        i = web.input(myfile={})
+        if 'myfile' in i:
+            filepath = i.myfile.filename.replace('\\','/')
+            filename = filepath.split('/')[-1]
+            fout =  open(imagepath + '/' + filename, 'wb')
+            fout.write(i.myfile.file.read())
+            fout.close()
+
+            infile = imagepath + '/' + filename
+            #outfile = infile + ".thumbnail.jpg"
+            #im = Image.open(infile)
+            #im.thumbnail((128, 128))
+            #im.save(outfile, im.format)
+        return render.upload(infile)
+          
+BUF_SIZE = 262144
+class getimage:
+    def GET(self, imgname):
+        try:
+            f = open(imagepath + '/' + imgname, 'rb')
+            web.header('Content-type','application/octet-stream')
+            web.header('Content-disposition', 'attachment; filename=%s.dat' % imgname)
+            while True:
+                c = f.read(BUF_SIZE)
+                if c:
+                    yield c
+                else:
+                    break;
+        except Exception, e:
+            print e
+            yield 'Error'
+        finally:
+            if f:
+                f.close()
 
 if __name__=="__main__":
     app = web.application(urls, globals())
