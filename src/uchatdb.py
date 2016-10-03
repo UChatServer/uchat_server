@@ -7,8 +7,8 @@ class UChatDB():
     def __init__(self, dbname, username, password,  host):
         self._db = web.database(dbn = 'mysql', db = dbname, user = username, pw = password, host = host)
 
-    def isonline(self, userid):
-        rs = self._db.query('select id, user_online from uchat.user_info where user_id = $uid', vars = {'uid': userid})
+    def isonline(self, userid, usertoken):
+        rs = self._db.query('select id, user_online from uchat.user_info where user_id = $uid and user_token = $utoken', vars = {'uid': userid, 'utoken': usertoken})
         if len(rs) == 0:
             return (False, "用户不存在")
         online = rs[0].user_online

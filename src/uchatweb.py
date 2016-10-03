@@ -44,8 +44,16 @@ class login:
             error_str = "不能登录：%s" % rs[1]
             return json.dumps({"code":0, "result":"null", "err_str": error_str})
         else:
-            rs = ucdb.isonline(userid)
-            if rs[0] is False:
+            #检查是否在线
+            rs = ucs.User.checkOnline(userid)
+            if rs.result[u'code'] is 200:
+                if rs.result[u'status'] is '1':
+                    online = True
+                else:
+                    online = False
+            else:
+                online = False
+            if online is False:
                 username = "kongyt"
                 iconurl = 'http://www.rongcloud.cn/images/logo.png'
                 rs = ucs.User.getToken(userid, username , iconurl)
@@ -83,7 +91,7 @@ class logout:
         userid = i.id
         usertoken = i.token
         web.header('content-type','text/json')
-        rs = ucdb.isonline(userid)
+        rs = ucdb.isonline(userid, usertoken)
         if rs[0] is False:
             error_str = '退出失败：%s' % rs[1]
             return json.dumps({"err_code":0, "result":False, "err_str": error_str})
@@ -103,7 +111,21 @@ class reconnect:
         userid = i.id
         usertoken = i.token
         web.header('content-type','text/json')
-        return "敬请期待".decode('utf8').encode('gb2312')
+        rs = ucdb.isonline(userid, usertoken)
+        if rs[0] is True:
+            username = "kongyt"
+            iconurl = 'http://www.rongcloud.cn/images/logo.png'
+            rs = ucs.User.getToken(userid, username , iconurl)
+            print rs
+            if rs.result[u'code'] is 200:
+                ucdb.online(userid, rs.result[u'token'])
+                return json.dumps({"code":1, "result": rs.result[u'token'], "err_str": "null"})
+            else:
+                error_str = "登录失败：融云服务返回Token失败"
+                return json.dumps({"code":0, "result": "null", "err_str": error_str})
+        else:
+            error_str = "用户不在线，不能重新换取token"
+            return json.dumps({"code":0, "result": "null", "err_str": error_str})
 
 
 
