@@ -11,6 +11,7 @@
     --pip install MySQL-python
 
     --pip install image (CentOS需要libjpeg-turbo-devel)
+    --pip install flup  (nginx + web.py + fastcgi 需要flup)
 
 ##安装web.py
     wget http://webpy.org/static/web.py-0.38.tar.gz
