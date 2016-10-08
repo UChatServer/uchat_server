@@ -49,3 +49,16 @@ class UChatDB():
             print "[注册失败]：用户已经存在！"
             return (False, "用户已经存在")
 
+    def get_user_info(self, userid):
+        rs = self._db.query('select id, user_name, user_sex, user_birthday, user_address, user_hobbies, user_career, user_constellation, user_tags from uchat.user_info where user_id = $uid', vars = {'uid': userid})
+        if len(rs) == 0:
+            print "[查询角色信息失败]"
+            return None
+        else:
+            print "[查询角色信息成功]"
+            return rs[0]
+
+    def can_get_friend_info(self, userid1, userid2):
+        return True
+
+

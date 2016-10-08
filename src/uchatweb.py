@@ -105,6 +105,48 @@ class logout:
             else:
                 return json.dumps({"err_code":1, "result":True, "err_str": "null"})
 
+class get_self_info:
+    def POST(self):
+        global ucs
+        global ucdb
+        i = web.input()
+        userid = i.id
+        usertoken = i.token
+        if ucdb.isonline(userid, usertoken) is False:
+            error_str = "获取个人信息失败，用户token错误"
+            return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})          
+        rs = ucdb.get_user_info(userid)
+        if rs is None:
+            error_str = "获取个人信息失败"
+            return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
+        else:
+            return json.dumps({"err_code": 1, "result": {"user_name": rs.user_name, "user_sex": rs.user_sex, "user_birthday": rs.user_birthday, "user_address": rs.user_address, "user_hobbies": rs.user_hobbies, "user_career": rs.user_career, "user_constellation": rs.user_constellation, "user_tags": rs.user_tags }, "err_str": error_str})
+
+class get_friend_info:
+    def POST(self):
+        global ucs
+        global ucdb
+        i = web.input()
+        self_userid = i.self_uid
+        self_token = i.token
+        friend_userid = i.friend_uid
+        if ucdb.isonline(self_userid, self_token) is True:
+            if ucdb.can_get_friend_info(self_userid, friend_userid) is True:
+                rs = ucdb.get_user_info(friend_userid)
+                if rs is None:
+                    error_str = "获取好友信息失败"
+                    return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
+                else:
+                    return json.dumps({"err_code": 1, "result": {"user_name": rs.user_name, "user_sex": rs.user_sex, "user_birthday": rs.user_birthday, "user_address": rs.user_address, "user_hobbies": rs.user_hobbies, "user_career": rs.user_career, "user_constellation": rs.user_constellation, "user_tags": rs.user_tags }, "err_str": error_str})
+            else:
+                error_str = "获取失败，好感度不足不能获取"
+                return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
+        else:
+            error_str = "用户id或token错误"
+            return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
+            
+        
+
 class reconnect:
     def POST(self):
         global ucs
