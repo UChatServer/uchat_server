@@ -10,8 +10,34 @@
 ##程序运行
    python uchatweb.py  //开启服务器程序，通过http协议访问
 
-###GET方式:
-   http://ip:端口/register?user_id=用户ID&user_password=用户密码<br>
-   http://ip:端口/login?user_id=用户ID&user_password=用户密码<br>
-   http://ip:端口/logout?user_id=用户ID&token=用户保存的Token <br>
+###GET方式
+   http://ip:端口/uploadimg
+
 ###POST方式
+   所有POST接口一律返回json数据类型
+
+   http://ip:端口/register
+   参数: id
+         pwd
+
+   http://ip:端口/login
+   参数: id
+         pwd
+
+   http://ip:端口/logout
+   参数: id
+         token
+
+   http://ip:端口/reconnect
+   参数: id
+         token
+
+   http://ip:端口/get_self_info
+   参数: id
+         token
+
+   http://ip:端口/get_friend_info
+   参数: self_uid
+         token
+         friend_uid
+         
