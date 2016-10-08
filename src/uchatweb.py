@@ -29,7 +29,9 @@ urls = (
     '/logout', 'logout',
     '/reconnect', 'reconnect',
     '/uploadimg', 'uploadimg',
-    '/images/(.*)', 'getimage'
+    '/images/(.*)', 'getimage',
+    '/get_self_info', 'get_self_info',
+    '/get_friend_info', 'get_firend_info'
 )
 
 class login:
