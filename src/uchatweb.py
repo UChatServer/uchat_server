@@ -117,7 +117,7 @@ class get_self_info:
         userid = i.id
         usertoken = i.token
         web.header('content-type','text/json')
-        if ucdb.isonline(userid, usertoken) is False:
+        if ucdb.isonline(userid, usertoken)[0] is False:
             error_str = "获取个人信息失败，用户token错误"
             return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})          
         rs = ucdb.get_user_info(userid)
@@ -137,7 +137,7 @@ class get_friend_info:
         friend_userid = i.friend_uid
         web.header('content-type','text/json')
         if ucdb.isonline(self_userid, self_token) is True:
-            if ucdb.can_get_friend_info(self_userid, friend_userid) is True:
+            if ucdb.can_get_friend_info(self_userid, friend_userid)[0] is True:
                 rs = ucdb.get_user_info(friend_userid)
                 if rs is None:
                     error_str = "获取好友信息失败"
