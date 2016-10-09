@@ -136,8 +136,8 @@ class get_friend_info:
         self_token = i.token
         friend_userid = i.friend_uid
         web.header('content-type','text/json')
-        if ucdb.isonline(self_userid, self_token) is True:
-            if ucdb.can_get_friend_info(self_userid, friend_userid)[0] is True:
+        if ucdb.isonline(self_userid, self_token)[0] is True:
+            if ucdb.can_get_friend_info(self_userid, friend_userid) is True:
                 rs = ucdb.get_user_info(friend_userid)
                 if rs is None:
                     error_str = "获取好友信息失败"
