@@ -31,7 +31,7 @@ urls = (
     '/uploadimg', 'uploadimg',
     '/images/(.*)', 'getimage',
     '/get_self_info', 'get_self_info',
-    '/get_friend_info', 'get_firend_info',
+    '/get_friend_info', 'get_friend_info',
     '/set_user_info', 'set_user_info',
     '/change_password_by_old_pwd', 'change_password_by_old_pwd',
 )
