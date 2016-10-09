@@ -125,7 +125,7 @@ class get_self_info:
             error_str = "获取个人信息失败"
             return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
         else:
-            return json.dumps({"err_code": 1, "result": {"user_name": rs.user_name, "user_sex": rs.user_sex, "user_birthday": rs.user_birthday, "user_address": rs.user_address, "user_hobbies": rs.user_hobbies, "user_career": rs.user_career, "user_constellation": rs.user_constellation, "user_tags": rs.user_tags }, "err_str": "null"})
+            return json.dumps({"err_code": 1, "result": {"user_name": rs.user_name, "user_sex": rs.user_sex, "user_birthday": rs.user_birthday, "user_address": rs.user_address, "user_hobbies": rs.user_hobbies, "user_career": rs.user_career, "user_tags": rs.user_tags }, "err_str": "null"})
 
 class get_friend_info:
     def POST(self):
