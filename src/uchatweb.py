@@ -191,7 +191,7 @@ class set_user_info:
         userhobbies = i.user_hobbies
         usercareer = i.user_career
         usertags = i.user_tags
-        web.head('content-type', 'text/json')
+        web.header('Content-Type', 'text/json')
         rs = ucdb.isonline(userid, usertoken)
         if rs[0] is True:
             ucdb.set_user_info(userid, username, usersex, userbirthday, useraddress, userhobbies, usercareer, usertags)
@@ -209,7 +209,7 @@ class change_password_by_old_pwd:
         userid = i.id
         useroldpwd = i.oldpwd
         usernewpwd = i.newpwd
-        web.head('content-type', 'text/json')
+        web.header('content-type', 'text/json')
         rs = ucdb.canlogin(userid, useroldpwd)
         if rs[0] is True:
             ucdb.change_pwd(userid, usernewpwd)
