@@ -31,7 +31,9 @@ urls = (
     '/uploadimg', 'uploadimg',
     '/images/(.*)', 'getimage',
     '/get_self_info', 'get_self_info',
-    '/get_friend_info', 'get_firend_info'
+    '/get_friend_info', 'get_firend_info',
+    '/set_user_info', 'set_user_info',
+    '/change_password_by_old_pwd', 'change_password_by_old_pwd',
 )
 
 class login:
@@ -114,6 +116,7 @@ class get_self_info:
         i = web.input()
         userid = i.id
         usertoken = i.token
+        web.header('content-type','text/json')
         if ucdb.isonline(userid, usertoken) is False:
             error_str = "获取个人信息失败，用户token错误"
             return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})          
@@ -132,6 +135,7 @@ class get_friend_info:
         self_userid = i.self_uid
         self_token = i.token
         friend_userid = i.friend_uid
+        web.header('content-type','text/json')
         if ucdb.isonline(self_userid, self_token) is True:
             if ucdb.can_get_friend_info(self_userid, friend_userid) is True:
                 rs = ucdb.get_user_info(friend_userid)
@@ -139,7 +143,7 @@ class get_friend_info:
                     error_str = "获取好友信息失败"
                     return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
                 else:
-                    return json.dumps({"err_code": 1, "result": {"user_name": rs.user_name, "user_sex": rs.user_sex, "user_birthday": rs.user_birthday, "user_address": rs.user_address, "user_hobbies": rs.user_hobbies, "user_career": rs.user_career, "user_constellation": rs.user_constellation, "user_tags": rs.user_tags }, "err_str": "null"})
+                    return json.dumps({"err_code": 1, "result": {"user_name": rs.user_name, "user_sex": rs.user_sex, "user_birthday": rs.user_birthday, "user_address": rs.user_address, "user_hobbies": rs.user_hobbies, "user_career": rs.user_career, "user_tags": rs.user_tags }, "err_str": "null"})
             else:
                 error_str = "获取失败，好感度不足不能获取"
                 return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
@@ -172,6 +176,48 @@ class reconnect:
         else:
             error_str = "用户不在线，不能重新换取token"
             return json.dumps({"err_code":0, "result": "null", "err_str": error_str})
+
+class set_user_info:
+    def POST(self):
+        global ucs
+        global ucdb
+        i = web.input()
+        userid = i.id
+        usertoken = i.token
+        username = i.user_name
+        usersex = i.user_sex
+        userbirthday = i.user_birthday
+        useraddress = i.user_address
+        userhobbies = i.user_hobbies
+        usercareer = i.user_career
+        usertags = i.user_tags
+        web.head('content-type', 'text/json')
+        rs = ucdb.isonline(userid, usertoken)
+        if rs[0] is True:
+            ucdb.set_user_info(userid, username, usersex, userbirthday, useraddress, userhobbies, usercareer, usertags)
+            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+        else:
+            error_str = "用户token错误，不能设置用户资料"
+            return json.dumps({"err_code": 0, "result": False, "err_str": error_str})
+            
+
+class change_password_by_old_pwd:
+    def POST(self):
+        global ucs
+        global ucdb
+        i = web.input()
+        userid = i.id
+        useroldpwd = i.oldpwd
+        usernewpwd = i.newpwd
+        web.head('content-type', 'text/json')
+        rs = ucdb.canlogin(userid, useroldpwd)
+        if rs[0] is True:
+            ucdb.change_pwd(userid, usernewpwd)
+            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+        else:
+            error_str = "认证错误，不能修改密码"
+            return json.dumps({"err_code": 0, "result": False, "err_str": error_str})
+
 
 imagepath = './images'
 urlpath = 'http://121.42.161.150:8080/images/'

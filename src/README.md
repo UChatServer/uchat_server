@@ -40,4 +40,20 @@
    参数: self_uid
          token
          friend_uid
-         
+
+   http://ip:端口/set_user_info
+   参数: id
+         token
+         user_name
+         user_sex
+         user_birthday
+         user_address
+         user_hobbies
+         user_career
+         user_tags 
+
+   http://ip:端口/change_password_by_old_pwd
+   参数: id
+         oldpwd
+         newpwd
+        
