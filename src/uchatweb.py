@@ -132,7 +132,7 @@ class get_friend_info:
         global ucs
         global ucdb
         i = web.input()
-        self_userid = i.self_uid
+        self_userid = i.id
         self_token = i.token
         friend_userid = i.friend_uid
         web.header('content-type','text/json')
@@ -184,13 +184,13 @@ class set_user_info:
         i = web.input()
         userid = i.id
         usertoken = i.token
-        username = i.user_name
-        usersex = i.user_sex
-        userbirthday = i.user_birthday
-        useraddress = i.user_address
-        userhobbies = i.user_hobbies
-        usercareer = i.user_career
-        usertags = i.user_tags
+        username = i.name
+        usersex = i.sex
+        userbirthday = i.birthday
+        useraddress = i.address
+        userhobbies = i.hobbies
+        usercareer = i.career
+        usertags = i.tags
         web.header('Content-Type', 'text/json')
         rs = ucdb.isonline(userid, usertoken)
         if rs[0] is True:
