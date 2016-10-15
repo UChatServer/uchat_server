@@ -182,20 +182,49 @@ class set_user_info:
         global ucs
         global ucdb
         i = web.input()
-        userid = i.id
-        usertoken = i.token
-        username = i.name
-        usersex = i.sex
-        userbirthday = i.birthday
-        useraddress = i.address
-        userhobbies = i.hobbies
-        usercareer = i.career
-        usertags = i.tags
+        
+        flag = True
+        userid = i.get("id")
+        if userid is None:
+            flag = False
+        usertoken = i.get("token")
+        if usertoken is None:
+            flag = False
+        if flag is False:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数获取错误"})
+
+
+	datamap = {}
+        username = i.get("name")
+        if username is not None:
+            datamap["user_name"] = username
+        usersex = i.get("sex")
+        if usersex is not None:
+            datamap["user_sex"] = usersex
+        userbirthday = i.get("birthday")
+        if userbirthday is not None:
+            datamap["user_birthday"] = userbirthday
+        useraddress = i.get("address")
+        if useraddress is not None:
+            datamap["user_address"] = useraddress
+        userhobbies = i.get("hobbies")
+        if userhobbies is not None:
+            datamap["user_hobbies"] = userhobbies
+        usercareer = i.get("career")
+        if usercareer is not None:
+            datamap["user_career"] = usercareer
+        userconstellation = i.get("constell")
+        if userconstellation is not None:
+            datamap["user_constellation"] = userconstellation
+        usertags = i.get("tags")
+        if usertags is not None:
+            datamap["user_tags"] = usertags
+
         web.header('Content-Type', 'text/json')
         rs = ucdb.isonline(userid, usertoken)
         if rs[0] is True:
-            ucdb.set_user_info(userid, username, usersex, userbirthday, useraddress, userhobbies, usercareer, usertags)
-            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+            ucdb.set_user_info(userid, datamap)
+	    return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
         else:
             error_str = "用户token错误，不能设置用户资料"
             return json.dumps({"err_code": 0, "result": False, "err_str": error_str})
