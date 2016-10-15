@@ -58,8 +58,8 @@ class UChatDB():
             print "[查询角色信息成功]"
             return rs[0]
 
-    def set_user_info(self, userid, **kwargs):
-        rs = self._db.update('user_info', where= 'user_id=$uid', vars = {'uid': userid}, **kwargs)
+    def set_user_info(self, userid, datamap):
+	rs = self._db.update('user_info', where= 'user_id=$uid', vars = {'uid': userid}, **datamap)
 
     def change_pwd(self, userid, password):
         rs = self._db.update('user_info', where='user_id=$uid', vars = {'uid': userid}, user_password = password)
