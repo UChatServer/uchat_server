@@ -44,6 +44,7 @@
    http://ip:端口/set_user_info
    参数: id
          token
+   可选参数:
          name
          sex
          birthday
@@ -56,4 +57,22 @@
    参数: id
          oldpwd
          newpwd
-        
+
+   http://ip:端口/set_location
+   参数: id
+         token
+         longitude
+         latitude
+
+   http://ip:端口/get_recommend_friends
+   参数: id
+         token
+         page
+   可选参数:
+         sex
+         age
+         distance
+         province
+         city
+         career
+         hobbies        

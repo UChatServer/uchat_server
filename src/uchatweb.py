@@ -34,6 +34,8 @@ urls = (
     '/get_friend_info', 'get_friend_info',
     '/set_user_info', 'set_user_info',
     '/change_password_by_old_pwd', 'change_password_by_old_pwd',
+    '/set_location', 'set_location',
+    '/get_recommend_friends', 'get_recommend_friends',
 )
 
 class login:
@@ -204,9 +206,12 @@ class set_user_info:
         userbirthday = i.get("birthday")
         if userbirthday is not None:
             datamap["user_birthday"] = userbirthday
-        useraddress = i.get("address")
+        userprovince = i.get("privince")
         if useraddress is not None:
-            datamap["user_address"] = useraddress
+            datamap["user_province"] = userprovince
+        usercity = i.get("city")
+        if usercity is not None:
+            datamap["user_city"] = usercity
         userhobbies = i.get("hobbies")
         if userhobbies is not None:
             datamap["user_hobbies"] = userhobbies
@@ -293,6 +298,39 @@ class getimage:
         finally:
             if f:
                 f.close()
+
+
+class set_location:
+    def POST(self):
+        i = web.input()
+        userid = i.get("id")
+	if userid is None:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数错误:没有获取到id值"})
+        usertoken = i.get("token")
+        if usertoken is None:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数错误:没有获取到token值"})
+        userlongitude = i.get("longitude")
+        if userlongitude is None:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数错误:没有获取到longitude值"})
+        userlatitude = i.get("latitude")
+        if userlatitude is None:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数错误:没有获取到latitude值"})
+        datamap = {}
+        datamap["user_longitude"] = userlongitude
+        datamap["user_latitude"] = userlatitude
+        web.header('Content-Type', 'text/json')
+        rs = ucdb.isonline(userid, usertoken)
+        if rs[0] is True:
+            ucdb.set_user_info(userid, datamap)
+            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+        else:
+            error_str = "用户token错误，不能设置用户位置"
+            return json.dumps({"err_code": 0, "result": False, "err_str": error_str})
+
+
+class get_recommend_friends:
+    def POST(self):
+        return json.dumps({"err_code": 0, "result": False, "err_str": "接口尚未实现"})
 
 if __name__=="__main__":
     app = web.application(urls, globals())
