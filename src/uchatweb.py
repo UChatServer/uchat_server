@@ -207,7 +207,7 @@ class set_user_info:
         if userbirthday is not None:
             datamap["user_birthday"] = userbirthday
         userprovince = i.get("privince")
-        if useraddress is not None:
+        if userprovince is not None:
             datamap["user_province"] = userprovince
         usercity = i.get("city")
         if usercity is not None:
