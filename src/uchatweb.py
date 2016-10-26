@@ -1,5 +1,6 @@
 #python
 # coding:utf8
+import sys
 import web
 from uchatserver import *
 from uchatdb import *
@@ -21,7 +22,7 @@ app_key = "x18ywvqf8x8rc"
 app_secret = "I5Rty3m89YC"
 
 ucs = UChatServer(app_key, app_secret)
-ucdb = UChatDB(dbname = 'uchat', username = 'uchat', password = 'uchat', host = '121.42.161.150')
+ucdb = UChatDB(dbname = 'uchat', username = 'uchat', password = 'uchat', host = '47.88.23.214')
 
 urls = (
     '/login', 'login',
@@ -253,10 +254,10 @@ class change_password_by_old_pwd:
             return json.dumps({"err_code": 0, "result": False, "err_str": error_str})
 
 
-imagepath = './images'
-urlpath = 'http://121.42.161.150:8080/images/'
+imagepath = '/home/kongyt/uchat_server/src/images'
+urlpath = 'http://www.kongyt.com/images/'
 
-render = web.template.render('templates/',)
+render = web.template.render('/home/kongyt/uchat_server/src/templates/',)
 
 class uploadimg:
     def GET(self):
@@ -268,7 +269,7 @@ class uploadimg:
         if 'myfile' in i:
             filepath = i.myfile.filename.replace('\\','/')
             filename = filepath.split('/')[-1]
-            fout =  open(imagepath + '/' + filename, 'wb')
+            fout =  open(imagepath + '/' + filename, 'wb+')
             fout.write(i.myfile.file.read())
             fout.close()
 
@@ -332,6 +333,39 @@ class get_recommend_friends:
     def POST(self):
         return json.dumps({"err_code": 0, "result": False, "err_str": "接口尚未实现"})
 
+
+def daemonize(stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+    try:
+        pid = os.fork()
+        if pid > 0:
+            sys.exit(0)
+    except OSError, e:
+        sys.stderr.write( "fork #1 failed: (%d) %s\n" % (e.errno, e.strerror))
+        sys.exit(1)
+
+    os.chdir('/')
+    os.umask(0)
+    os.setsid()
+
+    try:
+        pid = os.fork()
+        if pid > 0:
+            sys.exit(0)
+    except OSError, e:
+        sys.stderr.write("fork #2 failed: (%d) %s\n" %(e.errno, e.strerror))
+        sys.exit(1)
+
+    for f in sys.stdout, sys.stderr:
+        f.flush()
+    si = open(stdin, 'r')
+    so = open(stdout, 'a+')
+    se = open(stderr, 'a+', 0)
+    os.dup2(si.fileno(), sys.stdin.fileno())
+    os.dup2(so.fileno(), sys.stdout.fileno())
+    os.dup2(se.fileno(), sys.stderr.fileno())
+
+
 if __name__=="__main__":
+    daemonize('/dev/null', '/tmp/daemon_stdout.log', '/tmp/daemon_error.log')
     app = web.application(urls, globals())
     app.run()
