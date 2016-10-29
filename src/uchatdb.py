@@ -39,15 +39,20 @@ class UChatDB():
             print "[可以登录]"
             return (True , "可以登录")
 
-    def register(self, userid, password):
-        rs = self._db.query('select id from uchat.user_info where user_id = $uid', vars={'uid': userid})
-        if len(rs) == 0:
-            rs = self._db.insert('user_info', user_id = userid, user_password = password, user_online = 'N')
-            print "[注册成功]"
-            return (True, "注册成功")
-        else:
-            print "[注册失败]：用户已经存在！"
-            return (False, "用户已经存在")
+    def register(self, userid, password, name, birthday, sex):
+        try:
+            rs = self._db.query('select id from uchat.user_info where user_id = $uid', vars={'uid': userid})
+            if len(rs) == 0:
+                rs = self._db.insert('user_info', user_id = userid, user_password = password, user_online = 'N', user_name = name, user_birthday = birthday, user_sex = sex)
+                print "[注册成功]"
+                return (True, "注册成功")
+            else:
+                print "[注册失败]：用户已经存在！"
+                return (False, "用户已经存在")
+        except Exception, e:
+            err_str = "注册时数据库操作异常"
+            print err_str
+            return (False, err_str)
 
     def get_user_info(self, userid):
         rs = self._db.query('select id, user_name, user_sex, user_birthday, user_address, user_hobbies, user_career, user_tags from uchat.user_info where user_id = $uid', vars = {'uid': userid})

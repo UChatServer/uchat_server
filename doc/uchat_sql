@@ -27,3 +27,17 @@ PRIMARY KEY (id));
 
 alter table user_info add index uid (user_id);
 alter table user_info add index utoken (user_token);
+
+
+CREATE TABLE user_friends_info(
+  id INT NOT NULL AUTO_INCREMENT,
+  user1_id VARCHAR(20) NOT NULL,
+  user2_id VARCHAR(20) NOT NULL,
+  friendship INT DEFAULT 0,
+PRIMARY KEY(id));
+
+alter table user_friends_info add index uid1 (user1_id);
+alter table user_friends_info add index uid2 (user2_id);
+
+
+

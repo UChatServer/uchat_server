@@ -80,11 +80,19 @@ class register:
     def POST(self):
         global ucs
         global ucdb
-        i = web.input()
-        userid = i.id
-        password = i.pwd
+        try:
+            i = web.input()
+            userid = i.id
+            password = i.pwd
+            name = i.name
+            birthday = i.birthday
+            sex = i.sex
+        except Exception,e:
+            error_str =  "参数异常"
+            print error_str
+            return json.dumps({"err_code":0, "result":False, "err_str": error_str})
         web.header('content-type','text/json')
-        rs = ucdb.register(userid, password)
+        rs = ucdb.register(userid, password, name, birthday, sex)
         if rs[0] is False:
             error_str = "注册失败：%s" % rs[1]
             return json.dumps({"err_code":0, "result":False, "err_str": error_str})
