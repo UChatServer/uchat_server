@@ -68,11 +68,28 @@
    参数: id
          token
          page
-   可选参数:
+   可选参数:(暂不支持)
          sex
          age
          distance
          province
          city
          career
-         hobbies        
+         hobbies     
+
+
+   http://ip:端口/add_friend
+   参数: id
+         token
+         id2
+ 
+   http://ip:端口/del_friend
+   参数: id
+         token
+         id2
+
+   http://ip:端口/get_friend_list
+   参数: id
+         token
+         offset
+         limit   
