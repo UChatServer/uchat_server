@@ -37,6 +37,9 @@ urls = (
     '/change_password_by_old_pwd', 'change_password_by_old_pwd',
     '/set_location', 'set_location',
     '/get_recommend_friends', 'get_recommend_friends',
+    '/get_friend_list', 'get_friend_list',
+    '/add_friend', 'add_friend',
+    '/del_friend', 'del_friend',
 )
 
 class login:
@@ -373,7 +376,42 @@ class get_recommend_friends:
             return json.dumps({"err_code": 1, "result": rs[1], "err_str": "null"})
         else:
             return json.dumps({"err_code": 0, "result": [], "err_str": rs[1]})
-   
+  
+
+class add_friend:
+    def POST(self):
+        global ucs
+        global ucdb
+        web.header('content-type', 'text/json')
+        try:
+            i = web.input()
+            userid = i.id
+            utoken = i.token
+            userid2 = i.id2
+        except Exception,e:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数异常"})
+        rs = ucdb.add_friend(userid, token, userid2)
+        if rs[0] is True:
+            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+        else:
+            return json.dumps({"err_code": 0, "result": False, "err_str": rs[1]})
+class del_friend:
+     def POST(self):
+        global ucs
+        global ucdb
+        web.header('content-type', 'text/json')
+        try:
+            i = web.input()
+            userid = i.id
+            utoken = i.token
+            userid2 = i.id2
+        except Exception,e:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数异常"})
+        rs = ucdb.del_friend(userid, token, userid2)
+        if rs[0] is True:
+            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+        else:
+            return json.dumps({"err_code": 0, "result": False, "err_str": rs[1]})
 
 def daemonize(stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
     try:
