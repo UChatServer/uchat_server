@@ -72,5 +72,74 @@ class UChatDB():
     def can_get_friend_info(self, userid1, userid2):
         return True
 
+    def add_friend(self, userid1, token, userid2):
+        try:
+            rs =self.isonline(userid1, token)
+            if rs[0] is True:
+                rs2 =  self._db.query('select id from uchat.user_friends_info where user1_id = $uid1 and user2_id = $uid2', vars = {'uid1': userid1, 'uid2': userid2})
+                if len(rs2) == 0:
+                    rs3 = self._db.insert('user_firends_info', user1_id = userid1, user2_id = userid2)
+                    rs3 = self._db.insert('user_firends_info', user1_id = userid2, user2_id = userid1)
+                    return (True, "添加好友成功")
+                else:
+                    return (False, "已经是好友了")
+            else:
+                return (False, "当前用户在线认证失败")
+        except Exception, e:
+            err_str = "添加好友时数据库操作异常"
+            print err_str
+            return (False, err_str)
+
+    def del_friend(self, userid1, token, userid2):
+        try:
+            rs = self.isonline(userid1, token)
+            if rs[0] is True:
+                rs2 =  self._db.query('select id from uchat.user_friends_info where user1_id = $uid1 and user2_id = $uid2', vars = {'uid1': userid1, 'uid2': userid2})
+                if len(rs2) != 0:
+                    rs3 = self._db.delete('uchat.user_friends_info', where="user1_id=\"%s\" and user2_id=\"%s\"" % (userid1, userid2))
+                    rs4 = self._db.delete('uchat.user_friends_info', where="user1_id=\"%s\" and user2_id=\"%s\"" % (userid2, userid1))
+                    print "删除好友成功"
+                    return (True, "删除好友成功")
+                else:
+                    return (False,"双方不是好友")
+            else:
+                return (False, "当前用户在线认证失败")
+        except Exception, e:
+            err_str = "删除好友时数据库操作异常"
+            print err_str
+            return (False, err_str)
+
+
+    def get_friends(self, userid, token, ofst, lmt):
+        try:
+            rs = self.isonline(userid, token)
+            if rs[0] is True:
+                rs2 = self._db.select('uchat.user_friends_info', what='user2_id', where="user1_id=\"%s\"" % (userid), offset=ofst, limit=lmt)
+                data = []
+                for d in rs2:
+                    data.append(d.user2_id)
+                return (True, data)
+            else:
+                return (False, "当前用户在线认证失败")
+        except Exception, e:
+            err_str = "获取好友时数据库操作异常"
+            print err_str
+            return (False, err_str)
+
+    def get_recommend_friends(self, userid, token, ofst, lmt):
+        try:
+            rs = self.isonline(userid, token)
+            if rs[0] is True:
+                rs2 = self._db.select('uchat.user_info', what='user_id', where="user_id!=\"%s\"" % (userid), offset=ofst, limit=lmt)
+                data = []
+                for d in rs2:
+                    data.append(d.user_id)
+                return (True, data)
+            else:
+                return (False, "当前用户在线认证失败")
+        except Exception, e:
+            err_str = "匹配好友时数据库操作异常"
+            print err_str
+            return (False, err_str)
 
 

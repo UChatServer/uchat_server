@@ -161,8 +161,27 @@ class get_friend_info:
         else:
             error_str = "用户id或token错误"
             return json.dumps({"err_code": 0, "result": {}, "err_str": error_str})
-            
-        
+
+class get_friend_list:
+    def POST(self):
+        global ucs
+        global ucdb
+        web.header('content-type', 'text/json')
+        try:
+            i = web.input()
+            uid = i.id
+            utoken = i.token
+            ofst = i.offset
+            lmt = i.limit
+        except Exception, e:
+            print "get_friend_list 参数异常"
+            return json.dumps({"err_code":0, "result": [], "err_str": "参数错误"})
+        rs = ucdb.get_friends(uid, utoken, ofst, lmt)
+        if rs[0] is True:
+            return json.dumps({"err_code": 1, "result": rs, "err_str": "null"})
+        else:
+            return json.dumps({"err_code": 0, "result": [], "err_str": rs[1]})
+           
 
 class reconnect:
     def POST(self):
@@ -192,6 +211,7 @@ class set_user_info:
     def POST(self):
         global ucs
         global ucdb
+        web.header('content-type', 'text/json')
         i = web.input()
         
         flag = True
@@ -233,8 +253,6 @@ class set_user_info:
         usertags = i.get("tags")
         if usertags is not None:
             datamap["user_tags"] = usertags
-
-        web.header('Content-Type', 'text/json')
         rs = ucdb.isonline(userid, usertoken)
         if rs[0] is True:
             ucdb.set_user_info(userid, datamap)
@@ -339,8 +357,23 @@ class set_location:
 
 class get_recommend_friends:
     def POST(self):
-        return json.dumps({"err_code": 0, "result": False, "err_str": "接口尚未实现"})
-
+        global ucs
+        global ucdb
+        web.header('content-type', 'text/json')
+        try:
+            i = web.input()
+            userid = i.id
+            usertoken = i.token
+            ofst = i.page * 10
+            lmt = 10
+        except Exception,e:
+            return json.dumps({"err_code": 0, "result": [], "err_str": "参数异常"})
+        rs =  ucdb.get_recommend_friends(userid, usertoken, ofst, lmt)
+        if rs[0] is True:
+            return json.dumps({"err_code": 1, "result": rs[1], "err_str": "null"})
+        else:
+            return json.dumps({"err_code": 0, "result": [], "err_str": rs[1]})
+   
 
 def daemonize(stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
     try:
