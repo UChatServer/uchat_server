@@ -7,7 +7,6 @@ grant all on uchat.* to 'uchat'@'%';
 flush privileges;
 
 
-//创建表
 CREATE TABLE user_info(
   id INT NOT NULL AUTO_INCREMENT,
   user_id VARCHAR(20) NOT NULL,
@@ -15,7 +14,6 @@ CREATE TABLE user_info(
   user_name VARCHAR(20) NULL,
   user_sex VARCHAR(1) NULL,
   user_birthday VARCHAR(20) NULL,
-  user_address VARCHAR(256) NULL,
   user_hobbies VARCHAR(128) NULL,
   user_career VARCHAR(16) NULL,
   user_constellation VARCHAR(10) NULL,
@@ -23,6 +21,10 @@ CREATE TABLE user_info(
   user_avatar_url VARCHAR(1204) NULL,
   user_token VARCHAR(256) NULL,
   user_online VARCHAR(1) DEFAULT 'N',
+  user_province VARCHAR(20) NULL,
+  user_city VARCHAR(20) NULL,
+  user_longitude DECIMAL(10,7) NULL,
+  user_latitude DECIMAL(10,7) NULL,
 PRIMARY KEY (id));
 
 alter table user_info add index uid (user_id);

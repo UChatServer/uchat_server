@@ -6,6 +6,8 @@ from uchatserver import *
 from uchatdb import *
 import json
 from PIL import Image
+import os
+
 ##返回信息
 ##{"code": num,
 ## "result": value
@@ -40,6 +42,11 @@ urls = (
     '/get_friend_list', 'get_friend_list',
     '/add_friend', 'add_friend',
     '/del_friend', 'del_friend',
+    '/lock_pixel', 'lock_pixel',
+    '/unlock_pixel', 'unlock_pixel',
+    '/buy_pixel', 'buy_pixel',
+    '/get_pixel_wall', 'get_pixel_wall',
+    '/update_pixel_wall', 'update_pixel_wall',
 )
 
 class login:
@@ -413,6 +420,104 @@ class del_friend:
         else:
             return json.dumps({"err_code": 0, "result": False, "err_str": rs[1]})
 
+pixel_wall_file_path = "/home/kongyt/uchat_server/src/pixelwall/pixel_wall.bmp"
+class lock_pixel:
+    def POST(self):
+        web.header('content-type', 'text/json')
+	try:
+            i = web.input()
+            userid = i.id
+            utoken = i.token
+            pix_x = i.pixel_x
+            pix_y = i.pixel_y
+        except Exception, e:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数异常"})
+        rs = ucdb.lock_pixel(userid, utoken, pix_x, pix_y)
+	if rs[0] is True:
+            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+        else:
+            return json.dumps({"err_code": 0, "result": False, "err_str": rs[1]})
+
+class unlock_pixel:
+    def POST(self):
+        web.header('content-type', 'text/json')
+        try:
+            i = web.input()
+            userid = i.id
+            utoken = i.token
+            pix_x = i.pixel_x
+            pix_y = i.pixel_y
+        except Exception, e:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数异常"})
+        rs = ucdb.unlock_pixel(userid, utoken, pix_x, pix_y)
+        if rs[0] is True:
+            return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+        else:
+            return json.dumps({"err_code": 0, "result": False, "err_str": rs[1]})
+
+class buy_pixel:
+    def POST(self):
+        web.header('content-type', 'text/json')
+        try:
+            i = web.input()
+            userid = i.id
+            utoken = i.token
+            pix_x = i.pixel_x
+            pix_y = i.pixel_y
+            pix_color= i.pixel_color
+        except Exception, e:
+            return json.dumps({"err_code": 0, "result": False, "err_str": "参数异常"})
+        try:
+            rs = ucdb.buy_pixel(userid, utoken, pix_x, pix_y)
+            if rs[0] is True:
+                pixel_wall = Image.open(pixel_wall_file_path)
+                pixel_wall.putpixel((pix_x, pix_y), (pix_color>> 16 & 255, pix_color>>8 & 255, pix_color & 255))
+		pixel_wall.save(pixel_wall_file_path)
+                return json.dumps({"err_code": 1, "result": True, "err_str": "null"})
+            else:
+                return json.dumps({"err_code": 0, "result": False, "err_str": rs[1]})
+        except Exception, e:
+            print "============严重错误============="
+            print "严重错误, 购买像素失败"
+	    print e
+	    print "================================="
+            return return json.dumps({"err_code": 0, "result": False, "err_str": "像素墙图片打开失败"})
+
+
+class get_pixel_wall:
+    def POST(self):
+        web.header('content-type', 'text/json')
+        try:
+            i = web.input()
+            userid = i.id
+            utoken = i.token
+            pixel_wall_version = i.version
+        except Exception, e:
+            return json.dumps({"err_code": 0, "result": {}, "err_str": "参数异常"})
+        try:
+            rs = ucdb.get_pixel_wall_version()
+            if rs[0] is True:
+		if rs[1] == pixel_wall_version:
+			return json.dumps({"err_code": 1, "result":{"version": pixel_wall_version, "pixels": []}, "err_str": "null"})
+                pixel_wall = Image.open(pixel_wall_file_path)
+	        data = []
+                for x in range(0, 1024):
+                    for y in range(0, 1024):
+                        pixel = pixel_wall.getpixel((x,y))
+                        data.append({"x": x, "y": y, "color": (pixel[0]<<16|| pixel[1]<<8 || pixel[2])})
+	        return json.dumps({"err_code": 1, "result":{"version": rs[1], "pixels":data}, "err_str": "null"})
+            else:
+                return json.dumps({"err_code": 0, "result":{}, "err_str": "像素墙版本信息查询失败"})
+	except Exception, e:
+            print "像素墙打开失败"
+            return json.dumps({"err_code": 0, "result":{}, "err_str": "像素墙打开失败"})
+            
+class update_pixel_wall:
+    def POST(self):
+        web.header('content-type', 'text/json')
+        return json.dumps({"err_code": 0, "result": False, "err_str": "接口尚未实现"})
+
+            
 def daemonize(stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
     try:
         pid = os.fork()

@@ -142,4 +142,18 @@ class UChatDB():
             print err_str
             return (False, err_str)
 
+    def lock_pixel(self, userid, utoken, pix_x, pix_y):
+	print "尚未实现"
+	return (True, "尚未实现")
+
+    def unlock_pixel(self, userid, utoken, pix_x, pix_y):
+        print "尚未实现"
+        return (True, "尚未实现")
+
+
+    def buy_pixel:
+	print "尚未实现"
+        return (True, "尚未实现")
+
+
 
