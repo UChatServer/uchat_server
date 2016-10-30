@@ -41,5 +41,22 @@ PRIMARY KEY(id));
 alter table user_friends_info add index uid1 (user1_id);
 alter table user_friends_info add index uid2 (user2_id);
 
+CREATE TABLE pixel_lock_info(
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id VARCHAR(20) NOT NULL,
+  pixel_x INT NOT NULL,
+  pixel_y INT NOT NULL,
+PRIMARY KEY(id));
+
+alter table pixel_lock_info add index px ( pixel_x );
+alter table pixel_lock_info add index py ( pixel_y );
+
+
+CREATE TABLE global_info(
+  id INT NOT NULL,
+  pixel_version INT NULL,
+PRIMARY KEY(id));
+
+insert into global_info (id, pixel_version) values (1, 1);
 
 
