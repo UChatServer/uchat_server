@@ -234,8 +234,8 @@ class UChatDB():
                      return (True, rs[1]+1)
                  else:
                      return (False, "像素墙版本在数据库中的信息初始化错误")
-             else:
-                 return (False, "像素墙版本在数据库中的信息尚未初始化")
+            else:
+                return (False, "像素墙版本在数据库中的信息尚未初始化")
         except Exception, e:
             err_str = "设置像素墙版本信息时数据库操作异常"
             print err_str
