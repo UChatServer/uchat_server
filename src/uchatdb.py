@@ -143,17 +143,100 @@ class UChatDB():
             return (False, err_str)
 
     def lock_pixel(self, userid, utoken, pix_x, pix_y):
-	print "尚未实现"
-	return (True, "尚未实现")
+        try:
+            rs = self.isonline(userid, utoken)
+            if rs[0] is True:
+                t = self._db.transaction()
+		try:
+                    rs2 = self._db.query("select id, user_id from uchat.pixel_lock_info where pixel_x= $px and pixel_y=$py for update", vars = {'px': pix_x, 'py': pix_y})
+		    if len(rs2) == 0:
+                        self._db.insert('uchat.pixel_lock_info', user_id=userid, pixel_x = pix_x, pixel_y = pix_y)
+                except:
+                    t.rollback()
+		    return (False, "像素锁定失败")
+                else:
+                    t.commit()
+                    return (True, "像素锁定成功")
+            else:
+                return (False, "用户在线认证失败")
+        except Exception, e:
+            err_str = "锁定像素时数据库操作异常"
+	    print err_str
+	    return (False, err_str)
 
     def unlock_pixel(self, userid, utoken, pix_x, pix_y):
-        print "尚未实现"
-        return (True, "尚未实现")
+        try:
+            rs = self.isonline(userid, utoken)
+            if rs[0] is True:
+                 t = self._db.transaction()
+                 try:
+                     rs2 = self._db.query("select id from uchat.pixel_lock_info where userid = $uid pixel_x= $px and pixel_y=$py for update", vars = {'uid': userid, 'px': pix_x, 'py': pix_y})
+                     if len(rs2) != 0:
+                         self._db.delete('uchat.pixel_lock_info', where='id = $tid', vars = {'tid': rs2[0].id})
+                 except:
+                     t.rollback()
+                     return (False, "像素解锁失败")
+                 else:
+                     t.commit()
+                     return (True, "像素解锁成功")
+            else:
+                return (False, "用户在线认证失败")
+        except Exception, e:
+            err_str = "解锁像素时数据库操作异常"
+            print err_str
+            return (False, err_str)
 
 
-    def buy_pixel:
-	print "尚未实现"
-        return (True, "尚未实现")
+    def buy_pixel(self, userid, utoken, pix_x, pix_y):
+	try:
+            rs = self.isonline(userid, utoken)
+            if rs[0] is True:
+                t = self._db.transaction()
+                try:
+                    rs2 = self._db.query("select id, user_id from uchat.pixel_lock_info where pixel_x= $px and pixel_y=$py for update", vars = {'px': pix_x, 'py': pix_y})
+                    if len(rs2) != 0:
+                        if self.pixel_wall_version_add_one()[0] is True:
+                            self._db.update('uchat.pixel_lock_info', what='isbuy=$b', vars = {'b': 'Y'}, id=rs[0].id)
+                        else:
+                            return (False, "像素墙版本信息设置错误")
+                except:
+                    t.rollback()
+                    return (False, "像素购买失败")
+                else:
+                    t.commit()
+                    return (True, "像素购买成功")
+            else:
+                return (False, "用户在线认证失败")
+        except Exception, e:
+            err_str = "像素购买时数据库操作异常"
+            print err_str
+            return (False, err_str)
 
 
+    def get_pixel_wall_version(self):
+        try:
+            rs = self._db.query('select pixel_version from uchat.global_info where id = 1')
+            if len(rs) != 0:
+                return (True, rs[0].pixel_version)
+            else:
+                return (True, 0)
+        except Exception, e:
+            err_str = "获取像素墙版本信息时数据库操作异常"
+            print err_str
+            return (False, err_str)
 
+    def pixel_wall_version_add_one(self):
+        try:
+            rs = self.get_pixel_wall_version()
+            if rs[0] is True:
+                 if rs[1] != 0:
+                     self._db.update("uchat.global_info", where='id=1', pixel_version = (rs[1]+1))
+                     return (True, rs[1]+1)
+                 else:
+                     return (False, "像素墙版本在数据库中的信息初始化错误")
+             else:
+                 return (False, "像素墙版本在数据库中的信息尚未初始化")
+        except Exception, e:
+            err_str = "设置像素墙版本信息时数据库操作异常"
+            print err_str
+            return (False, err_str)
