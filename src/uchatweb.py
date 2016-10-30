@@ -481,7 +481,7 @@ class buy_pixel:
             print "严重错误, 购买像素失败"
 	    print e
 	    print "================================="
-            return return json.dumps({"err_code": 0, "result": False, "err_str": "像素墙图片打开失败"})
+            return json.dumps({"err_code": 0, "result": False, "err_str": "像素墙图片打开失败"})
 
 
 class get_pixel_wall:
@@ -504,7 +504,7 @@ class get_pixel_wall:
                 for x in range(0, 1024):
                     for y in range(0, 1024):
                         pixel = pixel_wall.getpixel((x,y))
-                        data.append({"x": x, "y": y, "color": (pixel[0]<<16|| pixel[1]<<8 || pixel[2])})
+                        data.append({"x": x, "y": y, "color": (pixel[0]<<16| pixel[1]<<8 | pixel[2])})
 	        return json.dumps({"err_code": 1, "result":{"version": rs[1], "pixels":data}, "err_str": "null"})
             else:
                 return json.dumps({"err_code": 0, "result":{}, "err_str": "像素墙版本信息查询失败"})
